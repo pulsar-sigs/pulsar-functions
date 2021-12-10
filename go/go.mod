@@ -2,7 +2,10 @@ module pulsar-functions
 
 go 1.17
 
-require github.com/apache/pulsar/pulsar-function-go v0.0.0-20211210060103-0015daba660e
+require (
+	github.com/allegro/bigcache v1.2.1
+	github.com/apache/pulsar/pulsar-function-go v0.0.0-20211210060103-0015daba660e
+)
 
 require (
 	github.com/99designs/keyring v1.1.5 // indirect

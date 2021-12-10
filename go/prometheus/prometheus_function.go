@@ -10,7 +10,7 @@ import (
 	"github.com/apache/pulsar/pulsar-function-go/pf"
 )
 
-func HandleRequest(ctx context.Context, in []byte) error {
+func remoteWriteHandler(ctx context.Context, in []byte) error {
 
 	// if fc, ok := pf.FromContext(ctx); ok {
 	// 	logutil.Info("function ID is:%s, ", fc.GetFuncID())
@@ -64,5 +64,5 @@ func doBytesPost(url string, data []byte) ([]byte, error) {
 }
 
 func main() {
-	pf.Start(HandleRequest)
+	pf.Start(remoteWriteHandler)
 }
