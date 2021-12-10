@@ -7,3 +7,7 @@ Receive prometheus remote write request data and push to prometheus remote write
 ## inactive_alert
 
 Check inactive(no message) topic in some time and push alert to dingtalk.
+
+## to_persistent
+
+Change non-persistent topic to persistent topic
