@@ -2,65 +2,65 @@ package main
 
 import (
 	"context"
-	"log"
+	"flag"
 
 	"github.com/apache/pulsar/pulsar-function-go/logutil"
 	"github.com/apache/pulsar/pulsar-function-go/pf"
 	"github.com/pulsar-sigs/pulsar-functions/pkg/prometheus"
-
-	"github.com/spf13/cobra"
 )
 
 func remoteWriteHandler(ctx context.Context, in []byte) error {
-
 	// if fc, ok := pf.FromContext(ctx); ok {
 	// 	logutil.Info("function ID is:%s, ", fc.GetFuncID())
 	// 	logutil.Info("function version is:%s\n", fc.GetFuncVersion())
 	// }
 
-	// todo
-	// 2. access not compress byte data
-	// 3. access remote.request protobuf object
-
-	go prometheus.DoBytesPost(target, in)
-	return nil
+	// todo access remote.request protobuf object
+	_, err := prometheus.DoBytesPost(target, in)
+	return err
 }
 
-var target = ""
+var (
+	target         string
+	function       bool
+	functionConfig string
+)
 
 func init() {
 
-	for k, v := range pf.GetUserConfMap() {
-		logutil.Infof("userMap:%s,%s\n", k, v)
-	}
+	flag.BoolVar(&function, "fun", true, "Is pulsar function")
+	flag.StringVar(&functionConfig, "fun-config", "", "Config file for pulsar function")
+	flag.Parse()
 
-	if remoteWriteTarget, ok := pf.GetUserConfMap()["target"]; !ok {
-		logutil.Fatal("have not prometheus remote write config! please set userConfig for taget")
-	} else {
-		target = remoteWriteTarget.(string)
-	}
-}
+	target = ""
 
-var function bool
-
-var rootCmd = &cobra.Command{
-	Use:   "pulsar-functions",
-	Short: "",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("begin pf.Start")
-		if function {
-			pf.Start(remoteWriteHandler)
-			return
+	if function {
+		for k, v := range pf.GetUserConfMap() {
+			logutil.Infof("userMap:%s,%s\n", k, v)
 		}
-		log.Println("run normal mode")
-	},
+
+		if remoteWriteTarget, ok := pf.GetUserConfMap()["target"]; !ok {
+			logutil.Fatal("have not prometheus remote write config! please set userConfig for taget")
+		} else {
+			target = remoteWriteTarget.(string)
+		}
+	}
 }
 
 func main() {
-	rootCmd.Flags().BoolVar(&function, "", true, "Is pulsar function")
-	err := rootCmd.Execute()
-	if err != nil {
-		panic(err)
+
+	if function {
+		logutil.Info("begin pf.Start")
+		pf.Start(remoteWriteHandler)
+		return
 	}
+
+	var stopper = make(chan struct{})
+
+	logutil.Info("run normal mode")
+
+	go prometheus.RunPrometheusFunction(context.TODO(), functionConfig, stopper)
+
+	<-stopper
+
 }
