@@ -14,12 +14,14 @@ import (
 	"github.com/apache/pulsar-client-go/pulsar"
 	"github.com/apache/pulsar/pulsar-function-go/logutil"
 	"github.com/golang/snappy"
+	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 )
 
 func DoBytesPost(url string, data []byte) ([]byte, error) {
 
 	encodedata := snappy.Encode(nil, data)
+	logutil.Info("encodedata.size:", len(encodedata))
 
 	body := bytes.NewReader(encodedata)
 	request, err := http.NewRequest("POST", url, body)
@@ -38,6 +40,10 @@ func DoBytesPost(url string, data []byte) ([]byte, error) {
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		logutil.Errorf("http.Do failed,[err=%s][url=%s]", err, url)
+	}
+	logutil.Info("push.prometheus status code:", resp.StatusCode)
+	if resp.StatusCode != 200 && resp.StatusCode != 204 {
+		return b, errors.New(string(b))
 	}
 	return b, err
 }
