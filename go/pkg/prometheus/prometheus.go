@@ -48,7 +48,22 @@ func DoBytesPost(url string, data []byte) ([]byte, error) {
 	return b, err
 }
 
-func RunPrometheusFunction(ctx context.Context, functionConfig string, stopchan chan struct{}) {
+type PrometheusHandle struct {
+	readness bool
+}
+
+func (p *PrometheusHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if !p.readness {
+		w.WriteHeader(503)
+	}
+}
+
+func (p *PrometheusHandle) RunPrometheusFunction(ctx context.Context, functionConfig string, stopchan chan struct{}) {
+
+	if functionConfig == "" {
+		logutil.Errorf("please set config file from --fun-config")
+		stopchan <- struct{}{}
+	}
 
 	conf, err := ReadYamlConfig(functionConfig)
 	if err != nil {
@@ -87,6 +102,7 @@ func RunPrometheusFunction(ctx context.Context, functionConfig string, stopchan 
 		log.Fatalf("Could not create Pulsar consumer: %v", err)
 	}
 	defer consumer.Close()
+	p.readness = true
 
 	for {
 		msg, err := consumer.Receive(context.TODO())
@@ -96,7 +112,7 @@ func RunPrometheusFunction(ctx context.Context, functionConfig string, stopchan 
 		}
 		_, err = DoBytesPost(conf.Config.Prometheus.Url, msg.Payload())
 		if err != nil {
-			logutil.Error("remote write data to prometheus failed!", err)
+			logutil.Error("remote write data to prometheus failed!", err, "properties", msg.Properties())
 			continue
 		}
 		consumer.Ack(msg)

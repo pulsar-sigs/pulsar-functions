@@ -1,0 +1,9 @@
+FROM golang:1.18 AS builder
+WORKDIR /go/src 
+ENV GO111MODULE=on GOPROXY=https://goproxy.cn CGO_ENABLED=0   
+ADD . .
+RUN go mod tidy && go build -tags netgo -o /bin/prometheus_function cmd/prometheus/prometheus_function.go
+
+FROM alpine:3.10
+COPY --from=builder /bin/prometheus_function /
+ENTRYPOINT ["/prometheus_function","--fun=false"]

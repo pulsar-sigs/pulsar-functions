@@ -3,9 +3,13 @@ package main
 import (
 	"context"
 	"flag"
+	"net/http"
+
+	_ "net/http/pprof"
 
 	"github.com/apache/pulsar/pulsar-function-go/logutil"
 	"github.com/apache/pulsar/pulsar-function-go/pf"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/pulsar-sigs/pulsar-functions/pkg/prometheus"
 )
 
@@ -59,7 +63,18 @@ func main() {
 
 	logutil.Info("run normal mode")
 
-	go prometheus.RunPrometheusFunction(context.TODO(), functionConfig, stopper)
+	prometheusHandle := &prometheus.PrometheusHandle{}
+
+	go func(p *prometheus.PrometheusHandle) {
+		http.Handle("/readness", p)
+		http.Handle("/metrics", promhttp.Handler())
+		err := http.ListenAndServe(":9494", nil)
+		if err != nil {
+			logutil.Fatal("start http server failed!", err)
+		}
+	}(prometheusHandle)
+
+	go prometheusHandle.RunPrometheusFunction(context.TODO(), functionConfig, stopper)
 
 	<-stopper
 
