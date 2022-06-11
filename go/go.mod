@@ -6,7 +6,9 @@ require (
 	github.com/allegro/bigcache v1.2.1
 	github.com/apache/pulsar-client-go v0.7.0
 	github.com/apache/pulsar/pulsar-function-go v0.0.0-20211210060103-0015daba660e
+	github.com/eclipse/paho.mqtt.golang v1.3.5
 	github.com/golang/snappy v0.0.4
+	github.com/pkg/errors v0.9.1
 	github.com/prometheus/prometheus v0.35.0-rc1
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -26,6 +28,7 @@ require (
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/keybase/go-keychain v0.0.0-20190712205309-48d3d31d256d // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
@@ -34,7 +37,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.12.1 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect

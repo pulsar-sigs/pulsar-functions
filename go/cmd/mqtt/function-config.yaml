@@ -1,0 +1,12 @@
+config:
+  pulsar:
+    url:  # pulsar broker url
+    topic:  # pulsar topic
+    subscriptionName:  # pulsar consumer subscription
+  mqtt:
+    url:  # your mqtt url
+    topicTemplate: ""  # pulsar properties, eg: pulsarsigs/{{ .deviceId }}
+    username: ""
+    password: ""
+    clientId: ""
+---

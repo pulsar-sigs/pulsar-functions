@@ -1,0 +1,10 @@
+config:
+  inputpulsar:
+    url: # pulsar broker url
+    topic:  # pulsar topic
+    subscriptionName:  # pulsar consumer subscription
+  outputpulsar:
+    url: # pulsar broker url
+    topic: # pulsar topic
+    subscriptionName:  # pulsar consumer subscription
+---
