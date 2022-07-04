@@ -1,8 +1,8 @@
 config:
   pulsar:
-    url: # pulsar broker url
-    topic:  # pulsar topic
-    subscriptionName: # pulsar consumer subscription
+    url: pulsar://smartoilets.cn:26650 # pulsar broker url
+    topic: persistent://smartoilets/tdb/store # pulsar topic
+    subscriptionName: test # pulsar consumer subscription
   prometheus:
-    url: # your prometheus remote write url
+    url: http://a # your prometheus remote write url
   

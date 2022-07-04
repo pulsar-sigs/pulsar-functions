@@ -18,7 +18,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func DoBytesPost(url string, data []byte) ([]byte, error) {
+func (p *PrometheusHandle) DoBytesPost(url string, data []byte) ([]byte, error) {
 
 	encodedata := snappy.Encode(nil, data)
 	logutil.Info("encodedata.size:", len(encodedata))
@@ -31,7 +31,7 @@ func DoBytesPost(url string, data []byte) ([]byte, error) {
 	}
 	request.Header.Set("Connection", "Keep-Alive")
 	var resp *http.Response
-	resp, err = http.DefaultClient.Do(request)
+	resp, err = p.HTTPClient.Do(request)
 	if err != nil {
 		logutil.Errorf("http.Do failed,[err=%s][url=%s]", err, url)
 		return []byte(""), err
@@ -49,11 +49,24 @@ func DoBytesPost(url string, data []byte) ([]byte, error) {
 }
 
 type PrometheusHandle struct {
-	readness bool
+	Readness   bool
+	Target     string
+	HTTPClient *http.Client
+}
+
+func (p *PrometheusHandle) RemoteWriteHandler(ctx context.Context, in []byte) error {
+	// if fc, ok := pf.FromContext(ctx); ok {
+	// 	logutil.Info("function ID is:%s, ", fc.GetFuncID())
+	// 	logutil.Info("function version is:%s\n", fc.GetFuncVersion())
+	// }
+
+	// todo access remote.request protobuf object
+	_, err := p.DoBytesPost(p.Target, in)
+	return err
 }
 
 func (p *PrometheusHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !p.readness {
+	if !p.Readness {
 		w.WriteHeader(503)
 	}
 }
@@ -102,15 +115,16 @@ func (p *PrometheusHandle) RunPrometheusFunction(ctx context.Context, functionCo
 		log.Fatalf("Could not create Pulsar consumer: %v", err)
 	}
 	defer consumer.Close()
-	p.readness = true
+	p.Readness = true
 
+	logutil.Info("=====begin receive message=====")
 	for {
 		msg, err := consumer.Receive(context.TODO())
 		if err != nil {
 			logutil.Error("receive message failed!", err)
 			continue
 		}
-		_, err = DoBytesPost(conf.Config.Prometheus.Url, msg.Payload())
+		_, err = p.DoBytesPost(conf.Config.Prometheus.Url, msg.Payload())
 		if err != nil {
 			logutil.Error("remote write data to prometheus failed!", err, "properties", msg.Properties())
 			continue
