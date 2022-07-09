@@ -21,7 +21,7 @@ import (
 func (p *PrometheusHandle) DoBytesPost(url string, data []byte) ([]byte, error) {
 
 	encodedata := snappy.Encode(nil, data)
-	logutil.Info("encodedata.size:", len(encodedata))
+	logutil.Debug("encodedata.size:", len(encodedata))
 
 	body := bytes.NewReader(encodedata)
 	request, err := http.NewRequest("POST", url, body)
@@ -124,12 +124,16 @@ func (p *PrometheusHandle) RunPrometheusFunction(ctx context.Context, functionCo
 			logutil.Error("receive message failed!", err)
 			continue
 		}
-		_, err = p.DoBytesPost(conf.Config.Prometheus.Url, msg.Payload())
-		if err != nil {
-			logutil.Error("remote write data to prometheus failed!", err, "properties", msg.Properties())
-			continue
-		}
-		consumer.Ack(msg)
+
+		go func(c pulsar.Consumer, u string, message pulsar.Message) {
+			_, err = p.DoBytesPost(u, message.Payload())
+			if err != nil {
+				logutil.Error("remote write data to prometheus failed!", err, "properties", msg.Properties())
+				return
+			}
+			c.Ack(msg)
+		}(consumer, conf.Config.Prometheus.Url, msg)
+
 	}
 }
 
