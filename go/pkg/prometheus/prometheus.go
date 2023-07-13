@@ -18,7 +18,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func (p *PrometheusHandle) DoBytesPost(url string, data []byte) ([]byte, error) {
+func (p *PrometheusHandle) doBytesPost(url string, data []byte) ([]byte, error) {
 
 	encodedata := snappy.Encode(nil, data)
 	logutil.Debug("encodedata.size:", len(encodedata))
@@ -61,7 +61,7 @@ func (p *PrometheusHandle) RemoteWriteHandler(ctx context.Context, in []byte) er
 	// }
 
 	// todo access remote.request protobuf object
-	_, err := p.DoBytesPost(p.Target, in)
+	_, err := p.doBytesPost(p.Target, in)
 	return err
 }
 
@@ -126,7 +126,7 @@ func (p *PrometheusHandle) RunPrometheusFunction(ctx context.Context, functionCo
 		}
 
 		go func(c pulsar.Consumer, u string, message pulsar.Message) {
-			_, err = p.DoBytesPost(u, message.Payload())
+			_, err = p.doBytesPost(u, message.Payload())
 			if err != nil {
 				logutil.Error("remote write data to prometheus failed!", err, "properties", msg.Properties())
 				return
