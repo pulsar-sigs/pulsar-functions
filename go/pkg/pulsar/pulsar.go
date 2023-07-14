@@ -19,8 +19,8 @@ func RunPulsarFunction(ctx context.Context, functionConfig string, stopchan chan
 		log.Fatal(err)
 	}
 
-	logutil.Debug("conf:", conf.Config.InputPulsar.Url)
-	logutil.Debug("conf:", conf.Config.OutputPulsar.Url)
+	logutil.Debug("input pulsar conf:", conf.Config.InputPulsar.Url)
+	logutil.Debug("output pulsar  conf:", conf.Config.OutputPulsar.Url)
 
 	if !strings.HasPrefix(conf.Config.InputPulsar.Url, "pulsar://") || !strings.HasPrefix(conf.Config.OutputPulsar.Url, "pulsar://") {
 		logutil.Errorf("unsupported pulsar protocol scheme %s,please use pulsar://", conf.Config.InputPulsar.Url)
@@ -54,6 +54,7 @@ func RunPulsarFunction(ctx context.Context, functionConfig string, stopchan chan
 	defer producer.Close()
 
 	for {
+
 		msg, err := consumer.Receive(context.TODO())
 		if err != nil {
 			logutil.Error("receive message failed!", err)

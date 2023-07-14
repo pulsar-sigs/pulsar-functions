@@ -1,10 +1,10 @@
 config:
   inputpulsar:
-    url: # pulsar broker url
-    topic:  # pulsar topic
-    subscriptionName:  # pulsar consumer subscription
+    url: pulsar://smartoilets.cn:26650 # pulsar broker url
+    topic: persistent://smartoilets/tdb/store # pulsar topic
+    subscriptionName: local  # pulsar consumer subscription
   outputpulsar:
-    url: # pulsar broker url
-    topic: # pulsar topic
-    subscriptionName:  # pulsar consumer subscription
+    url: pulsar://192.168.3.228:6650 # pulsar broker url
+    topic: persistent://public/default/store # pulsar topic
+    subscriptionName: local # pulsar consumer subscription
 ---
