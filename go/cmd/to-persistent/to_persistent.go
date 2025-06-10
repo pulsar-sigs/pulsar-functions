@@ -8,12 +8,12 @@ import (
 )
 
 func toPersistentHandler(ctx context.Context, in []byte) error {
-	if fc, ok := pf.FromContext(ctx); ok {
-		//TODO implement feature
-		topic := fc.GetCurrentRecord().Topic()
-		// logutil.Info("function ID is:%s, ", fc.GetFuncID())
-		// logutil.Info("function version is:%s\n", fc.GetFuncVersion())
-	}
+	// if fc, ok := pf.FromContext(ctx); ok {
+	// 	//TODO implement feature
+	// 	topic := fc.GetCurrentRecord().Topic()
+	// 	// logutil.Info("function ID is:%s, ", fc.GetFuncID())
+	// 	// logutil.Info("function version is:%s\n", fc.GetFuncVersion())
+	// }
 	return nil
 }
 
