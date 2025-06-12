@@ -39,7 +39,7 @@ func Test_DoBytesPost(t *testing.T) {
 		t.Fatal(err)
 	}
 	p := PrometheusHandle{}
-	_, err = DoBytesPost("localhost:9000/api/v1/prom/write", data)
+	_, err = p.DoBytesPost("localhost:9000/api/v1/prom/write", data)
 	if err != nil {
 		t.Fatal(err)
 	}
