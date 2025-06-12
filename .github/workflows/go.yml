@@ -23,4 +23,8 @@ jobs:
       run: cd go && go build -v ./...
 
     - name: Test
-      run: cd go && go test -v ./...
+      run: |
+        docker run -it -d  --name prometheus --network=host quay.io/prometheus/prometheus:v3.1.0 
+        docker ps 
+        docker logs prometheus
+        cd go && go test -v ./...
