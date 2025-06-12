@@ -34,7 +34,7 @@ func RunMQTTFunction(ctx context.Context, functionConfig string, stopchan chan s
 		t := template.New("mqtt topic template")
 		templ, err = t.Parse(conf.Config.Mqtt.TopicTemplate)
 		if err != nil {
-			logutil.Errorf("parse mqtt topic template failed", err)
+			log.Fatalf("parse mqtt topic template failed: %v", err)
 			stopchan <- struct{}{}
 			return
 		}
